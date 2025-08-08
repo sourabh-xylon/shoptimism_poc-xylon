@@ -333,6 +333,7 @@ elif st.session_state.step == 2:
                     st.write(f"**A:** {v['answer']}")
                     st.write("---")
 
+# Step 3: Recommendations (Corrected Version)
 elif st.session_state.step == 3:
     brand_name = st.session_state.merchant_data.get('brand_name', 'Your Brand')
     st.header(f"🏆 {brand_name} Recommendations")
@@ -375,7 +376,7 @@ elif st.session_state.step == 3:
             
             # AI reasoning in bullet points
             st.markdown("### 🤖 Why This Product is Perfect for You")
-            
+
             try:
                 reasoning_data = generate_product_reasoning_ai(
                     st.session_state.level1_data,
@@ -386,15 +387,15 @@ elif st.session_state.step == 3:
                 
                 # Check if reasoning_data is a dictionary (JSON response)
                 if isinstance(reasoning_data, dict):
-                    # Display as bullet points
+                    # Display as bullet points with updated keys
                     st.markdown("**Why:**")
                     st.markdown(f"• {reasoning_data.get('Why', 'Perfectly suited for your needs.')}")
                     
                     st.markdown("**What:**")
-                    st.markdown(f"• {reasoning_data.get('What it has', 'Contains beneficial ingredients.')}")
+                    st.markdown(f"• {reasoning_data.get('What', 'Contains beneficial ingredients.')}")
                     
                     st.markdown("**What's not:**")
-                    st.markdown(f"• {reasoning_data.get('What it doesn\\'t have', 'Free from harmful ingredients.')}")
+                    st.markdown(f"• {reasoning_data.get('What_not', 'Free from harmful ingredients.')}")
                 
                 else:
                     # Fallback for string response
@@ -407,35 +408,4 @@ elif st.session_state.step == 3:
                 st.markdown("**What:**")
                 st.markdown("• Contains formulation that addresses your main concerns effectively and safely.")
                 st.markdown("**What's not:**")
-                st.markdown("• Designed to work well with your routine and experience level.")
-            
-            # Add spacing between products
-            st.markdown("---")
-    
-    # Show full results option (simplified)
-    if st.checkbox("Show all ranked products"):
-        st.dataframe(show_top_recs(ranked_products, len(ranked_products)))
-    
-    # Restart buttons (simplified)
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("🔄 New Customer Quiz", use_container_width=True):
-            # Reset only quiz data, keep merchant data
-            st.session_state.step = 1
-            st.session_state.substep = 1
-            st.session_state.level1_data = {}
-            st.session_state.level2_questions = {}
-            st.session_state.level2_data = {}
-            st.rerun()
-    
-    with col2:
-        if st.button("🏢 Change Brand Setup", use_container_width=True):
-            # Reset everything
-            st.session_state.step = 0
-            st.session_state.substep = 1
-            st.session_state.merchant_data = {}
-            st.session_state.catalog_dataset = None
-            st.session_state.level1_data = {}
-            st.session_state.level2_questions = {}
-            st.session_state.level2_data = {}
-            st.rerun()
+                st.markdown("• Free from harmful ingredients that could irritate.")

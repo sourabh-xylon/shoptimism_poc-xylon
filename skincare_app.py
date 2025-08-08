@@ -333,7 +333,6 @@ elif st.session_state.step == 2:
                     st.write(f"**A:** {v['answer']}")
                     st.write("---")
 
-# Step 3: Enhanced Recommendations with Structured Reasoning
 elif st.session_state.step == 3:
     brand_name = st.session_state.merchant_data.get('brand_name', 'Your Brand')
     st.header(f"🏆 {brand_name} Recommendations")
@@ -361,35 +360,20 @@ elif st.session_state.step == 3:
 
     for idx, (_, product) in enumerate(top_recs.iterrows()):
         with st.container():
-            # Product header with ranking
+            # Product name only (no scores)
             product_name = product.get('Name') or product.get('Product_Name') or product.get('Title', 'Unknown Product')
-            match_percentage = product.get('match_percentage', 0)
+            st.markdown(f"## {product_name}")
             
-            # Product name with match percentage
-            st.markdown(f"## 🥇 {product_name}")
-            if match_percentage > 0:
-                st.markdown(f"**Match Score:** {match_percentage}% ✨")
+            # Display product information
+            important_display_cols = [col for col in top_recs.columns 
+                                    if col not in ['match_percentage', 'final_score', 'Name', 'Product_Name', 'Title']]
             
-            # Product details in columns
-            col1, col2 = st.columns([2, 1])
+            for col in important_display_cols:
+                if pd.notnull(product[col]) and str(product[col]).strip():
+                    display_name = col.replace('_', ' ').title()
+                    st.write(f"**{display_name}:** {product[col]}")
             
-            with col1:
-                # Display product information
-                important_display_cols = [col for col in top_recs.columns 
-                                        if col not in ['match_percentage', 'final_score', 'Name', 'Product_Name', 'Title']]
-                
-                for col in important_display_cols:
-                    if pd.notnull(product[col]) and str(product[col]).strip():
-                        display_name = col.replace('_', ' ').title()
-                        st.write(f"**{display_name}:** {product[col]}")
-            
-            with col2:
-                # Match percentage as a metric
-                if match_percentage > 0:
-                    st.metric("Perfect Match", f"{match_percentage}%", 
-                             delta="Great choice!" if match_percentage > 70 else "Good match!")
-            
-            # Enhanced AI reasoning display
+            # AI reasoning in bullet points
             st.markdown("### 🤖 Why This Product is Perfect for You")
             
             try:
@@ -402,17 +386,15 @@ elif st.session_state.step == 3:
                 
                 # Check if reasoning_data is a dictionary (JSON response)
                 if isinstance(reasoning_data, dict):
-                    # Create tabs for structured display
-                    tab1, tab2, tab3 = st.tabs(["🎯 Why It Works", "✅ What It Has", "🚫 What It Avoids"])
+                    # Display as bullet points
+                    st.markdown("**Why:**")
+                    st.markdown(f"• {reasoning_data.get('Why', 'Perfectly suited for your needs.')}")
                     
-                    with tab1:
-                        st.write(reasoning_data.get("Why", "Perfectly suited for your needs."))
+                    st.markdown("**What:**")
+                    st.markdown(f"• {reasoning_data.get('What it has', 'Contains beneficial ingredients.')}")
                     
-                    with tab2:
-                        st.write(reasoning_data.get("What it has", "Contains beneficial ingredients."))
-                    
-                    with tab3:
-                        st.write(reasoning_data.get("What it doesn't have", "Free from harmful ingredients."))
+                    st.markdown("**What's not:**")
+                    st.markdown(f"• {reasoning_data.get('What it doesn\\'t have', 'Free from harmful ingredients.')}")
                 
                 else:
                     # Fallback for string response
@@ -420,47 +402,24 @@ elif st.session_state.step == 3:
                     
             except Exception as e:
                 # Fallback reasoning if AI fails
-                st.info(f"This product from {brand_name} matches your specific needs and preferences. The formulation addresses your main concerns effectively and safely. It's designed to work well with your routine and experience level.")
-                st.caption(f"Note: AI reasoning temporarily unavailable")
+                st.markdown("**Why:**")
+                st.markdown(f"• This product from {brand_name} matches your specific needs and preferences.")
+                st.markdown("**What:**")
+                st.markdown("• Contains formulation that addresses your main concerns effectively and safely.")
+                st.markdown("**What's not:**")
+                st.markdown("• Designed to work well with your routine and experience level.")
             
             # Add spacing between products
             st.markdown("---")
     
-    # Enhanced results section
-    st.markdown("---")
+    # Show full results option (simplified)
+    if st.checkbox("Show all ranked products"):
+        st.dataframe(show_top_recs(ranked_products, len(ranked_products)))
     
-    # Show full results option with better formatting
-    with st.expander("🔍 View All Ranked Products"):
-        full_results = show_top_recs(ranked_products, len(ranked_products))
-        
-        # Display with better formatting
-        st.dataframe(
-            full_results,
-            use_container_width=True,
-            column_config={
-                "match_percentage": st.column_config.ProgressColumn(
-                    "Match %",
-                    help="How well this product matches your preferences",
-                    min_value=0,
-                    max_value=100,
-                    format="%.1f%%",
-                ),
-                "final_score": st.column_config.NumberColumn(
-                    "Score",
-                    help="Overall recommendation score",
-                    format="%.1f",
-                )
-            }
-        )
-    
-    # Restart buttons with better styling
-    st.markdown("---")
-    st.markdown("### 🔄 What's Next?")
-    
-    col1, col2, col3 = st.columns(3)
-    
+    # Restart buttons (simplified)
+    col1, col2 = st.columns(2)
     with col1:
-        if st.button("👤 New Customer Quiz", use_container_width=True, type="secondary"):
+        if st.button("🔄 New Customer Quiz", use_container_width=True):
             # Reset only quiz data, keep merchant data
             st.session_state.step = 1
             st.session_state.substep = 1
@@ -470,7 +429,7 @@ elif st.session_state.step == 3:
             st.rerun()
     
     with col2:
-        if st.button("🏢 Change Brand Setup", use_container_width=True, type="secondary"):
+        if st.button("🏢 Change Brand Setup", use_container_width=True):
             # Reset everything
             st.session_state.step = 0
             st.session_state.substep = 1
@@ -480,72 +439,3 @@ elif st.session_state.step == 3:
             st.session_state.level2_questions = {}
             st.session_state.level2_data = {}
             st.rerun()
-    
-    with col3:
-        # Download results option
-        if st.button("📊 Download Results", use_container_width=True, type="primary"):
-            # Create downloadable results
-            results_data = {
-                "brand_name": brand_name,
-                "customer_profile": {**st.session_state.level1_data, **st.session_state.level2_data},
-                "recommendations": top_recs.to_dict('records'),
-                "timestamp": datetime.now().isoformat()
-            }
-            
-            st.download_button(
-                label="📥 Download Recommendations (JSON)",
-                data=json.dumps(results_data, indent=2),
-                file_name=f"{brand_name}_recommendations_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
-                mime="application/json"
-            )
-
-# Sidebar info
-with st.sidebar:
-    # Show merchant info if available
-    if st.session_state.merchant_data:
-        st.markdown("### 🏢 Brand Info")
-        st.markdown(f"**Brand:** {st.session_state.merchant_data.get('brand_name', 'N/A')}")
-        st.markdown(f"**Industry:** {st.session_state.merchant_data.get('industry', 'N/A').title()}")
-        if st.session_state.catalog_dataset is not None:
-            st.markdown(f"**Products:** {len(st.session_state.catalog_dataset)}")
-        st.markdown("---")
-    
-    # Quiz progress
-    st.markdown("### 📊 Progress")
-    
-    if st.session_state.step == 0:
-        st.markdown("🔄 **Brand Setup**")
-        st.markdown("⏳ Basic Info")
-        st.markdown("⏳ Detailed Questions")
-        st.markdown("⏳ Recommendations")
-    elif st.session_state.step == 1:
-        st.markdown("✅ Brand Setup")
-        st.markdown(f"🔄 **Basic Info** ({st.session_state.substep}/4)")
-        st.markdown("⏳ Detailed Questions")
-        st.markdown("⏳ Recommendations")
-    elif st.session_state.step == 2:
-        total_l2 = len([k for k in st.session_state.level2_questions.keys() if k.startswith('question_')])
-        st.markdown("✅ Brand Setup")
-        st.markdown("✅ Basic Info")
-        st.markdown(f"🔄 **Detailed Questions** ({st.session_state.substep}/{total_l2})")
-        st.markdown("⏳ Recommendations")
-    elif st.session_state.step == 3:
-        st.markdown("✅ Brand Setup")
-        st.markdown("✅ Basic Info")
-        st.markdown("✅ Detailed Questions")
-        st.markdown("🔄 **Recommendations**")
-    
-    # Show Level 1 answers if completed
-    if st.session_state.step >= 2 and len(st.session_state.level1_data) > 0:
-        st.markdown("---")
-        st.markdown("### Basic Info")
-        for k, v in st.session_state.level1_data.items():
-            st.markdown(f"**{k.replace('_', ' ').title()}:** {v}")
-    
-    # Show Level 2 answers if any exist
-    if st.session_state.step >= 2 and len(st.session_state.level2_data) > 0:
-        st.markdown("---")
-        st.markdown("### Detailed Answers")
-        for k, v in st.session_state.level2_data.items():
-            q_num = k.replace('question_', '')
-            st.markdown(f"**Q{q_num}:** {v['answer']}")

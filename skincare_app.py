@@ -334,9 +334,65 @@ elif st.session_state.step == 2:
                     st.write("---")
 
 # Step 3: Recommendations (Corrected Version)
+# Step 3: Recommendations with User Profile Summary
 elif st.session_state.step == 3:
     brand_name = st.session_state.merchant_data.get('brand_name', 'Your Brand')
     st.header(f"🏆 {brand_name} Recommendations")
+    
+    # User Profile Summary at the top
+    st.markdown("---")
+    
+    # Brief Profile Summary (Always Visible)
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown("### 👤 Your Profile")
+        # Show key Level 1 data
+        for k, v in st.session_state.level1_data.items():
+            display_key = k.replace('_', ' ').title()
+            st.markdown(f"**{display_key}:** {v}")
+    
+    with col2:
+        st.markdown("### 🏢 Brand Info")
+        st.markdown(f"**Brand:** {brand_name}")
+        st.markdown(f"**Industry:** {st.session_state.merchant_data.get('industry', '').title()}")
+        st.markdown(f"**Total Products:** {len(st.session_state.catalog_dataset)}")
+    
+    with col3:
+        st.markdown("### 📊 Quiz Summary")
+        total_l1_answers = len(st.session_state.level1_data)
+        total_l2_answers = len(st.session_state.level2_data)
+        st.markdown(f"**Basic Questions:** {total_l1_answers} answered")
+        st.markdown(f"**Detailed Questions:** {total_l2_answers} answered")
+        st.markdown(f"**Total Responses:** {total_l1_answers + total_l2_answers}")
+    
+    # Detailed Profile (Expandable)
+    with st.expander("🔍 View Complete Quiz Responses", expanded=False):
+        col_a, col_b = st.columns(2)
+        
+        with col_a:
+            st.markdown("#### 📋 Basic Information")
+            if st.session_state.level1_data:
+                for k, v in st.session_state.level1_data.items():
+                    display_key = k.replace('_', ' ').title()
+                    st.markdown(f"• **{display_key}:** {v}")
+            else:
+                st.markdown("_No basic information available_")
+        
+        with col_b:
+            st.markdown("#### 🔍 Detailed Responses")
+            if st.session_state.level2_data:
+                for k, v in st.session_state.level2_data.items():
+                    q_num = k.replace('question_', '')
+                    st.markdown(f"• **Q{q_num}:** {v.get('answer', 'N/A')}")
+                    if len(v.get('question', '')) > 50:
+                        st.markdown(f"  _({v.get('question', '')[:50]}...)_")
+                    else:
+                        st.markdown(f"  _({v.get('question', '')})_")
+            else:
+                st.markdown("_No detailed responses available_")
+    
+    st.markdown("---")
     
     with st.spinner("Finding your perfect products..."):
         # Get recommendation conditions using uploaded dataset
@@ -356,27 +412,47 @@ elif st.session_state.step == 3:
         ranked_products = rank_all_recommendations(st.session_state.catalog_dataset, rec_conditions)
         top_recs = show_top_recs(ranked_products, 3)
     
-    # Clean product display
-    st.subheader("Your Perfect Products")
-
+    # Product recommendations with personalization context
+    st.subheader("🎯 Personalized Just for You")
+    st.markdown(f"*Based on your {len(st.session_state.level1_data) + len(st.session_state.level2_data)} quiz responses*")
+    
     for idx, (_, product) in enumerate(top_recs.iterrows()):
         with st.container():
-            # Product name only (no scores)
+            # Product name with ranking
             product_name = product.get('Name') or product.get('Product_Name') or product.get('Title', 'Unknown Product')
-            st.markdown(f"## {product_name}")
+            st.markdown(f"## {idx + 1}. {product_name}")
             
-            # Display product information
-            important_display_cols = [col for col in top_recs.columns 
-                                    if col not in ['match_percentage', 'final_score', 'Name', 'Product_Name', 'Title']]
+            # Two-column layout for product info and user context
+            prod_col, context_col = st.columns([2, 1])
             
-            for col in important_display_cols:
-                if pd.notnull(product[col]) and str(product[col]).strip():
-                    display_name = col.replace('_', ' ').title()
-                    st.write(f"**{display_name}:** {product[col]}")
+            with prod_col:
+                # Display product information
+                important_display_cols = [col for col in top_recs.columns 
+                                        if col not in ['match_percentage', 'final_score', 'Name', 'Product_Name', 'Title']]
+                
+                for col in important_display_cols:
+                    if pd.notnull(product[col]) and str(product[col]).strip():
+                        display_name = col.replace('_', ' ').title()
+                        st.write(f"**{display_name}:** {product[col]}")
+            
+            with context_col:
+                # Show relevant user preferences that match this product
+                st.markdown("##### 🎯 Matches Your:")
+                # Show key user preferences that influenced this recommendation
+                key_prefs = []
+                for k, v in st.session_state.level1_data.items():
+                    if k in ['skin_type', 'hair_type', 'age', 'skin_concern', 'hair_concern']:
+                        key_prefs.append(f"• {k.replace('_', ' ').title()}: **{v}**")
+                
+                for pref in key_prefs[:3]:  # Show top 3 most relevant
+                    st.markdown(pref)
+                
+                if len(key_prefs) > 3:
+                    st.markdown(f"• *+{len(key_prefs) - 3} more preferences*")
             
             # AI reasoning in bullet points
             st.markdown("### 🤖 Why This Product is Perfect for You")
-
+            
             try:
                 reasoning_data = generate_product_reasoning_ai(
                     st.session_state.level1_data,
@@ -409,3 +485,34 @@ elif st.session_state.step == 3:
                 st.markdown("• Contains formulation that addresses your main concerns effectively and safely.")
                 st.markdown("**What's not:**")
                 st.markdown("• Free from harmful ingredients that could irritate.")
+            
+            # Add spacing between products
+            st.markdown("---")
+    
+    # Show full results option (simplified)
+    if st.checkbox("Show all ranked products"):
+        st.dataframe(show_top_recs(ranked_products, len(ranked_products)))
+    
+    # Restart buttons (simplified)
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("🔄 New Customer Quiz", use_container_width=True):
+            # Reset only quiz data, keep merchant data
+            st.session_state.step = 1
+            st.session_state.substep = 1
+            st.session_state.level1_data = {}
+            st.session_state.level2_questions = {}
+            st.session_state.level2_data = {}
+            st.rerun()
+    
+    with col2:
+        if st.button("🏢 Change Brand Setup", use_container_width=True):
+            # Reset everything
+            st.session_state.step = 0
+            st.session_state.substep = 1
+            st.session_state.merchant_data = {}
+            st.session_state.catalog_dataset = None
+            st.session_state.level1_data = {}
+            st.session_state.level2_questions = {}
+            st.session_state.level2_data = {}
+            st.rerun()

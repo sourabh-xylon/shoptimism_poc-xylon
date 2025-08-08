@@ -12,28 +12,37 @@ import vertexai
 
 def setup_google_credentials():
     if 'gcp_service_account' in st.secrets:
-        # Create credentials object with proper scopes
+        # Create service account info dictionary
         service_account_info = dict(st.secrets.gcp_service_account)
+        
+        # Create credentials object with EXPLICIT SCOPES (this is the key fix)
         credentials = service_account.Credentials.from_service_account_info(
             service_account_info,
-            scopes=['https://www.googleapis.com/auth/cloud-platform']
+            scopes=[
+                'https://www.googleapis.com/auth/cloud-platform',
+                'https://www.googleapis.com/auth/vertex-ai'
+            ]
         )
         
-        # Initialize VertexAI explicitly
+        # Initialize VertexAI with explicit credentials (crucial for Streamlit Cloud)
         vertexai.init(
             project="optimum-nebula-464016-m2",
+            location="us-central1",  # or your preferred region
             credentials=credentials
         )
         
-        # Also create temp file for compatibility
+        # Create temporary file for backward compatibility
         with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
             json.dump(service_account_info, f)
             credentials_path = f.name
         
+        # Set environment variables
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
+        os.environ["GOOGLE_CLOUD_PROJECT"] = "optimum-nebula-464016-m2"
+        
         return credentials_path
     else:
-        # Your existing local code stays the same
+        # Local development (your existing code)
         credentials_path = "optimum-nebula-464016-m2-fc38b0ea02ef.json"
         if os.path.exists(credentials_path):
             os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path

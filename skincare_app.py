@@ -334,33 +334,59 @@ elif st.session_state.step == 2:
                     st.write("---")
 
 # Step 3: Recommendations 
+# Step 3: Recommendations with Journey Flow
 elif st.session_state.step == 3:
     brand_name = st.session_state.merchant_data.get('brand_name', 'Your Brand')
     st.header(f"🏆 {brand_name} Recommendations")
     
-    # Simple User Selections Summary at the top
+    # User Journey Flow in One Line
+    st.markdown("---")
+    st.markdown("### 🛤️ Your Personalization Journey")
+    
+    # Collect all user choices in order
+    journey_steps = []
+    
+    # Add Level 1 data (basic info)
+    if st.session_state.level1_data:
+        for k, v in st.session_state.level1_data.items():
+            # Clean up the value for display
+            clean_value = str(v).replace(" - I'm just starting", "").replace(" - ", " ")
+            journey_steps.append(clean_value)
+    
+    # Add Level 2 data (detailed answers)
+    if st.session_state.level2_data:
+        for k, v in sorted(st.session_state.level2_data.items()):
+            answer = v.get('answer', 'N/A')
+            journey_steps.append(answer)
+    
+    # Display as horizontal flow with arrows
+    if journey_steps:
+        journey_text = " → ".join(journey_steps)
+        
+        # Use a scrollable container for long journeys
+        st.markdown(
+            f"""
+            <div style="
+                background-color: #f0f2f6; 
+                padding: 15px; 
+                border-radius: 10px; 
+                border-left: 5px solid #ff6b6b;
+                overflow-x: auto;
+                white-space: nowrap;
+                font-family: 'Segoe UI', sans-serif;
+            ">
+                <strong>🎯 Your Path:</strong> {journey_text}
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
+        
+        # Show step count
+        st.markdown(f"*{len(journey_steps)} steps completed*")
+    
     st.markdown("---")
     
-    col1, col2 = st.columns([1, 1])
-    
-    with col1:
-        st.markdown("### 👤 Your Selections")
-        # Show Level 1 data
-        if st.session_state.level1_data:
-            for k, v in st.session_state.level1_data.items():
-                display_key = k.replace('_', ' ').title()
-                st.markdown(f"**{display_key}:** {v}")
-    
-    with col2:
-        st.markdown("### 🔍 Detailed Answers")
-        # Show Level 2 data
-        if st.session_state.level2_data:
-            for k, v in st.session_state.level2_data.items():
-                q_num = k.replace('question_', '')
-                st.markdown(f"**Q{q_num}:** {v.get('answer', 'N/A')}")
-    
-    st.markdown("---")
-    
+    # Rest of your existing recommendation code...
     with st.spinner("Finding your perfect products..."):
         # Get recommendation conditions using uploaded dataset
         relevant_cols = relevent_columns(
@@ -379,7 +405,7 @@ elif st.session_state.step == 3:
         ranked_products = rank_all_recommendations(st.session_state.catalog_dataset, rec_conditions)
         top_recs = show_top_recs(ranked_products, 3)
     
-    # Clean product display (NO per-product matching)
+    # Clean product display
     st.subheader("Your Perfect Products")
 
     for idx, (_, product) in enumerate(top_recs.iterrows()):
@@ -397,7 +423,7 @@ elif st.session_state.step == 3:
                     display_name = col.replace('_', ' ').title()
                     st.write(f"**{display_name}:** {product[col]}")
             
-            # AI reasoning in bullet points (your existing code)
+            # AI reasoning in bullet points
             st.markdown("### 🤖 Why This Product is Perfect for You")
             
             try:

@@ -4,9 +4,34 @@ from langchain_core.prompts import ChatPromptTemplate
 import os
 import json
 from prompt import column_selection_prompt, quiz_level2_simple_prompt, quiz_recommendation_mapping_prompt, product_reasoning_prompt, important_columns_selection_prompt
+import tempfile
+import streamlit as st
 
+def setup_google_credentials():
+    if 'gcp_service_account' in st.secrets:
+        # Create temporary JSON file from TOML secrets
+        service_account_info = dict(st.secrets.gcp_service_account)
+        
+        # Create a temporary file with the credentials
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+            json.dump(service_account_info, f)
+            credentials_path = f.name
+        
+        # Set the environment variable
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
+        return credentials_path
+    else:
+        # For local development
+        credentials_path = "optimum-nebula-464016-m2-fc38b0ea02ef.json"
+        if os.path.exists(credentials_path):
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
+            return credentials_path
+        else:
+            st.error("Google Cloud credentials not found!")
+            return None
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "optimum-nebula-464016-m2-fc38b0ea02ef.json"
+# Call this at the beginning of your functions
+setup_google_credentials()
 
 llm = ChatVertexAI(
     model="gemini-2.5-flash",

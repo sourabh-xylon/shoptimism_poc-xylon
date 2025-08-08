@@ -1,4 +1,7 @@
 __pycache__/
 *.pyc
 .env
-
+.json
+*.json                           
+.streamlit/secrets.toml         
+optimum-nebula-464016-m2-fc38b0ea02ef.json  

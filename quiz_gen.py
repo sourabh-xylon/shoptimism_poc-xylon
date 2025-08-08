@@ -344,14 +344,12 @@ def generate_product_reasoning_ai(quiz_1_res, quiz_2_res, product_row, company_n
         })
         
         # Get the response and ensure exactly 3 lines
-        reasoning = response.content.strip()
-        lines = [line.strip() for line in reasoning.split('\n') if line.strip()]
-        
-        # Return exactly 3 lines
-        if len(lines) >= 3:
-            return '\n'.join(lines[:3])
-        else:
-            return reasoning
+        reasoning = response.content
+
+        response_content = response.content
+        response_json = json.loads(response_content[response_content.index("{") : response_content.rindex("}") + 1])
+
+        return response_json
             
     except Exception as e:
         return f"This product from {company_name} matches your specific needs and preferences. The formulation addresses your main concerns effectively and safely. It's designed to work well with your routine and experience level."

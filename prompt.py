@@ -167,6 +167,12 @@ Product Details:
 - Free From: {free_from}
 
 Write exactly 3 sentences of simple reasoning.
+Why:
+What it has:
+What it doesn’t have:
+
+Output Format(Strict JSON):- 
+{{Why:"reason why", "What it has": "What all it has which will solve customer consurn", "What it doesn’t have" : "What its free from"}}
 """
 
 

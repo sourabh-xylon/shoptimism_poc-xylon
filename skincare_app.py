@@ -13,10 +13,8 @@ from quiz_gen import (
     rank_all_recommendations, 
     show_top_recs,
     generate_product_reasoning_ai,
-    setup_google_credentials
 )
 
-setup_google_credentials()
 
 # Page config
 st.set_page_config(page_title="AI Product Recommendation System", page_icon="🛍️", layout="wide")

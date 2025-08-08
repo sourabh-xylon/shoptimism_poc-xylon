@@ -10,69 +10,47 @@ import streamlit as st
 from google.oauth2 import service_account
 import vertexai
 
-def setup_google_credentials():
-    """Setup Google Cloud credentials only - no LLM creation"""
+def get_configured_llm():
+    """Get LLM with proper credentials"""
     
-    if 'gcp_service_account' in st.secrets:
-        try:
-            service_account_info = dict(st.secrets.gcp_service_account)
-            
-            # Create credentials with all required scopes
-            credentials = service_account.Credentials.from_service_account_info(
-                service_account_info,
-                scopes=[
-                    'https://www.googleapis.com/auth/cloud-platform',
-                    'https://www.googleapis.com/auth/vertex-ai',
-                    'https://www.googleapis.com/auth/generative-language'
-                ]
-            )
-            
-            # Initialize VertexAI with credentials
-            vertexai.init(
-                project="my-vertex-ai-app",
-                location="us-central1",
-                credentials=credentials
-            )
-            
-            # Set environment variables for compatibility
-            with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
-                json.dump(service_account_info, f)
-                temp_path = f.name
-            
-            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_path
-            os.environ["GOOGLE_CLOUD_PROJECT"] = "my-vertex-ai-app"
-            
-            return credentials, temp_path
-            
-        except Exception as e:
-            st.error(f"Failed to setup Google Cloud credentials: {str(e)}")
-            return None, None
-            
+    # Get credentials from environment (set by your setup function)
+    credentials_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT", "my-vertex-ai-app")
+    
+    if credentials_path:
+        # Load credentials from the temp file created by setup
+        credentials = service_account.Credentials.from_service_account_file(
+            credentials_path,
+            scopes=[
+                'https://www.googleapis.com/auth/cloud-platform',
+                'https://www.googleapis.com/auth/vertex-ai'
+            ]
+        )
+        
+        return ChatVertexAI(
+            model="gemini-2.5-flash",  # Use stable model
+            temperature=0.5,
+            max_tokens=None,
+            max_retries=3,
+            project=project_id,
+            location="us-central1",
+            credentials=credentials  # This is the key!
+        )
     else:
-        # Local development fallback
-        credentials_path = "my-vertex-ai-app-credentials.json"
-        if os.path.exists(credentials_path):
-            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
-            os.environ["GOOGLE_CLOUD_PROJECT"] = "my-vertex-ai-app"
-            
-            vertexai.init(
-                project="my-vertex-ai-app",
-                location="us-central1"
-            )
-            
-            return None, credentials_path
-        else:
-            st.error("Google Cloud credentials not found!")
-            return None, None
+        # Fallback to default credentials (for local development)
+        return ChatVertexAI(
+            model="gemini-2.5-flash",
+            temperature=0.5,
+            max_tokens=None,
+            max_retries=3,
+            project=project_id,
+            location="us-central1"
+        )
+
+# Use this instead of global llm variable
+llm = get_configured_llm()
 
 
-llm = ChatVertexAI(
-    model="gemini-2.5-flash",
-    temperature=0.5,
-    max_tokens=None,
-    max_retries=6,
-    stop=None,
-)
 
 def relevent_columns(column_names, industry, dataset):
     """

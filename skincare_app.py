@@ -334,7 +334,6 @@ elif st.session_state.step == 2:
                     st.write("---")
 
 # Step 3: Recommendations 
-# Step 3: Recommendations with Journey Flow
 elif st.session_state.step == 3:
     brand_name = st.session_state.merchant_data.get('brand_name', 'Your Brand')
     st.header(f"🏆 {brand_name} Recommendations")
@@ -342,51 +341,31 @@ elif st.session_state.step == 3:
     # User Journey Flow in One Line
     st.markdown("---")
     st.markdown("### 🛤️ Your Personalization Journey")
-    
+
     # Collect all user choices in order
     journey_steps = []
-    
+
     # Add Level 1 data (basic info)
     if st.session_state.level1_data:
         for k, v in st.session_state.level1_data.items():
             # Clean up the value for display
             clean_value = str(v).replace(" - I'm just starting", "").replace(" - ", " ")
             journey_steps.append(clean_value)
-    
-    # Add Level 2 data (detailed answers)
+
+    # Add Level 2 data (detailed answers)  
     if st.session_state.level2_data:
         for k, v in sorted(st.session_state.level2_data.items()):
             answer = v.get('answer', 'N/A')
             journey_steps.append(answer)
-    
-    # Display as horizontal flow with arrows
+
+    # Display as simple info box (Pure Streamlit version)
     if journey_steps:
         journey_text = " → ".join(journey_steps)
-        
-        # Use a scrollable container for long journeys
-        st.markdown(
-            f"""
-            <div style="
-                background-color: #f0f2f6; 
-                padding: 15px; 
-                border-radius: 10px; 
-                border-left: 5px solid #ff6b6b;
-                overflow-x: auto;
-                white-space: nowrap;
-                font-family: 'Segoe UI', sans-serif;
-            ">
-                <strong>🎯 Your Path:</strong> {journey_text}
-            </div>
-            """, 
-            unsafe_allow_html=True
-        )
-        
-        # Show step count
+        st.info(f"🎯 **Your Path:** {journey_text}")
         st.markdown(f"*{len(journey_steps)} steps completed*")
-    
+
     st.markdown("---")
     
-    # Rest of your existing recommendation code...
     with st.spinner("Finding your perfect products..."):
         # Get recommendation conditions using uploaded dataset
         relevant_cols = relevent_columns(

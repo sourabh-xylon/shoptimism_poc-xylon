@@ -5,8 +5,6 @@ import os
 import json
 from prompt import column_selection_prompt, quiz_level2_simple_prompt, quiz_recommendation_mapping_prompt, product_reasoning_prompt, important_columns_selection_prompt
 
-# Remove hardcoded dataset - now configurable
-# skincare_master_dataset = pd.read_csv("/Users/sourabh/Desktop/Shoptimism-AI-Product-Sales-Expert/haruharu.csv",encoding="latin")
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "optimum-nebula-464016-m2-fc38b0ea02ef.json"
 

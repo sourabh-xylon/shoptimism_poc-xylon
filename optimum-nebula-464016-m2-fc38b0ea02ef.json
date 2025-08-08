@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "optimum-nebula-464016-m2",
+  "private_key_id": "fc38b0ea02efe70a48a598ae4818b6576f7d8ef7",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDQsIhuQPbg7hFe\naJYvuiq8MVcbWWpCI96htEzQQ8YnchCS7VbDCsq9O5c3mZnF6rNNKYZ5ehYdlz3X\n8HCECjAIJl6aROmm0wVp4lWdsTRibZG3ZsTyJsISVcBhVi6zV70egfaDszwPnWye\nZujRvrDXq5hpU2cWl6TRZu1csi5q+VLgeMS3SaBqkFU6rn6kFsX3rSMQGKzCynT5\nT024W2tnyq/mjKs4yfIv31e11Zmv+ah7DJDuX1Dl8XpNyZyBuCI8XcxH0u9DXMSp\naTjr+EoX0o4qsnf0DjSy8btLENaS6y7woSMOMPYWt1xy0VSNmo2EcfybC9pO9L9+\ndsRtznavAgMBAAECggEACO0I1zplGzrJ65e3Y/dnY4dyujzWH1nizr5kK+MLz/az\ngC1LMQPYDXiShhjGRUfw5YoZcj56dEdadRvkgoLf1tr/rRAcgRVBt1H5QONQiJM2\n9wXowsWAnU5Yo6Rb6/5pNhHvks0XcqchLoDbtwW1qtijWxuFOCfbr1WV+m+0+sAQ\n3NUlMPgFVXgq4MBpYCITBhHKXBraRzTjbQfpq4I5Viq5r66Vxd9+mZQno9VE0cZm\ngbD3lB2EWZ4w7wB5PhfhxpDI2PvYPRUcATaSCGe/v/gdwQoC1VlsQ0jYkvkL8tyd\nAn9gg5FA/VIoamIqD2ULql8z3zBHHiyOs/sH8uaT9QKBgQDvbJQBI/tm7vAL0ym1\ndm5KYiuQ7PrRZ3N8WVSg7S121RWLDWsBjKaA+cg/4b46Yub8fEQL0gJp0yJjyR/a\nnCWel7OXs4VwOYrYW4J05a4dklmcM7n2NBbRVbwtcycCGsWHMotFyiMwG6Ddx17x\nMIfZ9F8fIHLxf/8GrxGGdxZazQKBgQDfIzuDhF0ARrqoZG7KrmEv9fuw9erjeGvk\nLx9QwtLXy+/V0mTm9Pv0Z9ck1alMs+o71jV588JVhY7hSw/uNj1YVy1ZtPGgvq43\nFx3JS9+wsFXkPgbUWZxMCdOQQLNcPGd1k0pivKLqP861RUfYBRZwuk5xdSP5H7kV\nI4ObEbaPawKBgQDEPhXt/WUx0IT23ETilMj/tQmKh4NqIkY5VSsVoHHUZgF7cSsV\nIQjUzGeDXO/EAY7cwqovmhoaTVFxwseWMshu/l7Y5+9mtfOFNTRvxlZ5rJxAePFi\nyP0u5fwQsML3aaQgFaCsOmuvIeYwAhtiy+l+D1vsMnekVMpe2x4dPf0XvQKBgBJh\n3apFAkBek0wCEhqCaSFBW33FlJcuuXyv4R2PHz2F4Hk1/vgD4KnO0CuJqovWGorZ\nZ8hnK3BOM2od++786urXK7ZDMNC0RLfnIJ4PsRrmO/00mu1tgHHHMXWlzuDfXQqT\nmsItliJEJWxLi9KhAKtCvemc49zHH0E9jr78o5SHAoGBANdHx5xYSb5zqpK+HXkQ\nOq7gggHI00OpwkL1MimMGmzZd5Hziq5tO5bLNHbKhmODcuGjAfpPHVI7ZqHqM6YA\nO/m/1ryBLR7lSHbUZGK9HEaXGLfKO1lX8Cee6xJSFXYORvp9sxnYcw/gwyh36izq\nwmK3/+4vWlRDnoVN83lbFBpA\n-----END PRIVATE KEY-----\n",
+  "client_email": "shoptimismapp@optimum-nebula-464016-m2.iam.gserviceaccount.com",
+  "client_id": "104724088014014015438",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/shoptimismapp%40optimum-nebula-464016-m2.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

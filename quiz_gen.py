@@ -11,46 +11,52 @@ from google.oauth2 import service_account
 import vertexai
 
 def setup_google_credentials():
+    """Setup Google Cloud credentials only - no LLM creation"""
+    
     if 'gcp_service_account' in st.secrets:
         try:
             service_account_info = dict(st.secrets.gcp_service_account)
             
+            # Create credentials with all required scopes
             credentials = service_account.Credentials.from_service_account_info(
                 service_account_info,
                 scopes=[
                     'https://www.googleapis.com/auth/cloud-platform',
-                    'https://www.googleapis.com/auth/vertex-ai'
+                    'https://www.googleapis.com/auth/vertex-ai',
+                    'https://www.googleapis.com/auth/generative-language'
                 ]
             )
             
-            # Use YOUR new project ID
+            # Initialize VertexAI with credentials
             vertexai.init(
-                project="my-vertex-ai-app",  # Updated project ID
+                project="my-vertex-ai-app",
                 location="us-central1",
                 credentials=credentials
             )
             
+            # Set environment variables for compatibility
             with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
                 json.dump(service_account_info, f)
                 temp_path = f.name
             
             os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_path
-            os.environ["GOOGLE_CLOUD_PROJECT"] = "my-vertex-ai-app"  # Updated here too
+            os.environ["GOOGLE_CLOUD_PROJECT"] = "my-vertex-ai-app"
             
             return credentials, temp_path
             
         except Exception as e:
             st.error(f"Failed to setup Google Cloud credentials: {str(e)}")
             return None, None
+            
     else:
-        # Update local development path if needed
-        credentials_path = "my-vertex-ai-app-credentials.json"  # Update filename
+        # Local development fallback
+        credentials_path = "my-vertex-ai-app-credentials.json"
         if os.path.exists(credentials_path):
             os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
             os.environ["GOOGLE_CLOUD_PROJECT"] = "my-vertex-ai-app"
             
             vertexai.init(
-                project="my-vertex-ai-app",  # Updated project ID
+                project="my-vertex-ai-app",
                 location="us-central1"
             )
             

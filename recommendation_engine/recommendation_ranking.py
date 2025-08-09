@@ -1,7 +1,7 @@
 import pandas as pd
 
 def rank_all_recommendations(df: pd, recommendation_conditions: dict):
-    
+
     """
     Rank ALL products by how well they match conditions
     No products are filtered out - just ranked by match quality
@@ -69,7 +69,7 @@ def rank_all_recommendations(df: pd, recommendation_conditions: dict):
                 
             col_series = df[col].fillna('')
             
-            # Initialize violations to prevent UnboundLocalError
+            
             violations = pd.Series([False] * len(df))
             
             if cond['condition'] == 'not_contains':
@@ -87,7 +87,7 @@ def rank_all_recommendations(df: pd, recommendation_conditions: dict):
             df_ranked['avoid_penalty'] * -2
         )
         
-        # Add match percentage for transparency
+        
         total_conditions = (
             len(recommendation_conditions.get('must_have_conditions', [])) + 
             len(recommendation_conditions.get('preferred_conditions', []))

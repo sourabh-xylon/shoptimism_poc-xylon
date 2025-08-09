@@ -4,6 +4,7 @@ from prompts.product_reasoning import product_reasoning_prompt
 from llm.congifure_llm import llm
 
 
+"***Below Function can be impooved by letting ai slect the important columns dynamically***"
 
 def generate_product_reasoning_ai(quiz_1_res: str, quiz_2_res: str, product_row: dict, company_name: str):
 
@@ -24,7 +25,7 @@ def generate_product_reasoning_ai(quiz_1_res: str, quiz_2_res: str, product_row:
         
         chain = reasoning_prompt_template | llm
     
-        # Handle different possible column names for product information
+    
         product_name = product_row.get('Name') or product_row.get('Product_Name') or product_row.get('Title', 'This product')
         suitable_for = product_row.get('SuitableFor') or product_row.get('Suitable_For', '')
         concern = product_row.get('Concern') or product_row.get('Concerns', '')

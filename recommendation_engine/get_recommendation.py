@@ -3,7 +3,7 @@ import json
 from prompts.recommendation_query_building import quiz_recommendation_mapping_prompt
 from llm.congifure_llm import llm
 
-def get_recommendation(quiz_1_res, quiz_2_res, generated_columns_with_unique_labels, company_name):
+def get_recommendation(quiz_1_res: str, quiz_2_res: str, generated_columns_with_unique_labels: dict, company_name: str):
 
     """
     Generate product recommendations based on quiz results

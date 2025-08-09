@@ -29,7 +29,7 @@ def relevent_columns(column_names: List, industry: str, dataset: pd.DataFrame):
         )
         chain = column_selection_prompt_templete | llm
 
-        # Use the provided dataset instead of hardcoded one
+        
         product_map = {}
         for col in list(dataset.columns):
             product_map[col] = len(dataset[col].unique())
@@ -44,7 +44,7 @@ def relevent_columns(column_names: List, industry: str, dataset: pd.DataFrame):
         generated_columns = generated_columns.content
         generated_columns = json.loads(generated_columns[generated_columns.index("{") : generated_columns.rindex("}") + 1])
         
-        # Use provided dataset instead of hardcoded one
+        
         generated_columns_dataset = dataset[generated_columns["columns"]]
         generated_columns_with_unique_labels = {}
 
